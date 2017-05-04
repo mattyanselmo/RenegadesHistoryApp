@@ -27,6 +27,8 @@ standings.func <- function(dat = dat,
       return(return.dat %>% arrange(desc(Wins)))
     }
   } else{
+    func.data <- func.data %>%
+      filter(Playoffs == 0)
     if(type == 'Actual'){
       ggplot(func.data,
              aes(Week, Wins.cum, color = Team)) +
