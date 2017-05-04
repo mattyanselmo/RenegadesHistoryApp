@@ -9,4 +9,30 @@ shinyServer(function(input, output) {
                  best = ifelse(input$records_best == 'Best', T, F),
                  numshow = input$records_showtopnum)
   }, digits = 3)
+  
+  output$standingstable1 <- renderTable({
+    
+    standings.func(dat = dat, 
+                 season = input$standings_season, 
+                 week = input$standings_week,
+                 type = input$standings_type,
+                 cumulative = F)
+  }, digits = 3)
+  
+  output$standingstable2 <- renderTable({
+    
+    standings.func(dat = dat, 
+                   season = input$standings_season, 
+                   week = input$standings_week,
+                   type = input$standings_type,
+                   cumulative = T)
+  }, digits = 3)
+  
+  output$standingsplot <- renderPlot({
+    standings.func(dat = dat, 
+                   season = input$standings_season, 
+                   week = input$standings_week,
+                   type = input$standings_type,
+                   cumulative = T)
+  })
 })
