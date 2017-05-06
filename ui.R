@@ -62,6 +62,10 @@ shinyUI(navbarPage("League History",
                        choices = c('Actual', 'Schedule-adjusted', 'Rotisserie'),
                        selected = 'Actual'),
            
+           tags$style(type="text/css",
+                      ".shiny-output-error { visibility: hidden; }",
+                      ".shiny-output-error:before { visibility: hidden; }"),
+           
            tableOutput('standingstable1'),
            tableOutput('standingstable2'),
            plotOutput('standingsplot'))
