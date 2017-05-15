@@ -1,4 +1,7 @@
-dat <- read.csv('RenegadesHistory.csv')
+dat <- read.csv(ifelse(file.exists('C:/Users/Matthias.Kullowatz'), 
+                       'C:/Users/Matthias.Kullowatz/Google Drive/Baseball Projects/Fantasy Baseball/weeklyscoreboard.csv',
+                       'C:/Users/Matthias/Google Drive/Baseball Projects/Fantasy Baseball/weeklyscoreboard.csv'))
+# dat <- read.csv('RenegadesHistory.csv')
 teammap <- read.csv('TeamMapping.csv')
 
 library(dplyr)
