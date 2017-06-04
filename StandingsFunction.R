@@ -1,6 +1,6 @@
 standings.func <- function(dat = dat,
                            season = 2017,
-                           week = 'Regular',
+                           week = 'Regular season',
                            type = 'Actual',
                            cumulative = T){
   
@@ -8,7 +8,7 @@ standings.func <- function(dat = dat,
     filter(Season == season)
   
   
-  if(week != 'Regular'){
+  if(week != 'Regular season'){
     func.data <- func.data %>%
       filter(Week == week)
     
@@ -33,21 +33,24 @@ standings.func <- function(dat = dat,
       ggplot(func.data,
              aes(Week, Wins.cum, color = Team)) +
         geom_line(size = 1.5) + 
-        scale_color_manual(values = colorRampPalette(c('black', 'blue', 'green', 'yellow', 'orange', 'red', 'purple'))(12))
+        scale_color_manual(values = colorRampPalette(c('black', 'blue', 'green', 'yellow', 'orange', 'red', 'purple'))(12)) +
+        ylab('Cumulative Actual Wins')
     }
     
     else if(type == 'Schedule-adjusted'){
       ggplot(func.data,
              aes(Week, xWins.cum, color = Team)) +
         geom_line(size = 1.5) + 
-        scale_color_manual(values = colorRampPalette(c('black', 'blue', 'green', 'yellow', 'orange', 'red', 'purple'))(12))
+        scale_color_manual(values = colorRampPalette(c('black', 'blue', 'green', 'yellow', 'orange', 'red', 'purple'))(12)) +
+        ylab('Cumulative Schedule Adjusted Wins')
     }
     
     else {
       ggplot(func.data,
              aes(Week, Borda.cum, color = Team)) +
         geom_line(size = 1.5) + 
-        scale_color_manual(values = colorRampPalette(c('black', 'blue', 'green', 'yellow', 'orange', 'red', 'purple'))(12))
+        scale_color_manual(values = colorRampPalette(c('black', 'blue', 'green', 'yellow', 'orange', 'red', 'purple'))(12)) +
+        ylab('Cumulative Rotisserie Score')
     }
   }
   

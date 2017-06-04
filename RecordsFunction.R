@@ -1,24 +1,53 @@
+# dat <- read.csv('RenegadesHistoryFormatted.csv')
+# weekly = F
+# Season = 2016
+# statcat = 'HR'
+# playoffs = F
+# best = T
+# numshow = 5
+
 records.func <- function(dat = dat, 
                          weekly = T, 
-                         season = F, 
+                         season = c(2011:2017), 
                          statcat = 'All',
                          playoffs = F,
                          best = T,
                          numshow = 5){
   
-  dat <- dat %>% filter(AllStar == 0)
+  dat <- dat %>% filter(AllStar == 0) %>%
+    mutate(Luck = Wins - xWins)
   
   if(!weekly){
-    dat <- dat %>%
+    dat.test <- dat %>%
+      filter(Playoffs == as.numeric(playoffs)) %>%
       group_by(Season, Team) %>%
-      summarize(Poop = 1)
+      summarize(R = sum(R),
+                HR = sum(HR),
+                RBI = sum(RBI),
+                SB = sum(SB),
+                OBP = mean(OBP),
+                SLG = mean(SLG),
+                K = sum(K),
+                QS = sum(QS),
+                W = sum(W), 
+                SV = sum(SV),
+                ERA = mean(ERA),
+                WHIP = mean(WHIP),
+                Luck = sum(Luck)) %>%
+      ungroup()
+    
+    return(dat.test %>% 
+             select_(.dots = c('Team', 'Season', statcat)) %>%
+             arrange_(ifelse((statcat %in% c('WHIP', 'ERA') & best) | (!(statcat %in% c('WHIP', 'ERA')) & !best), statcat, paste0('desc(', statcat, ')'))) %>%
+             filter(row_number() <= numshow))
+    
   } else{ 
     if(statcat == 'All'){
       if(playoffs){
-        ranks <- data.frame(Team = dat$Team[dat$Playoffs == 1], 
-                            Season = dat$Season[dat$Playoffs == 1], 
-                            Week = dat$Week[dat$Playoffs == 1], 
-                            sapply(dat %>% filter(dat$Playoffs == 1) %>% 
+        ranks <- data.frame(Team = dat$Team[dat$Playoffs == 1 & dat$Season %in% season], 
+                            Season = dat$Season[dat$Playoffs == 1 & dat$Season %in% season], 
+                            Week = dat$Week[dat$Playoffs == 1 & dat$Season %in% season], 
+                            sapply(dat %>% filter(Playoffs == 1 & Season %in% season) %>% 
                                      select(R:SV), rank), 
                             sapply(dat %>% filter(dat$Playoffs == 1) %>% 
                                      select(ERA, WHIP), function(x) nrow(dat) + 1 - rank(x)))
@@ -28,40 +57,40 @@ records.func <- function(dat = dat,
                  filter(row_number() <= numshow) %>%
                  select(Team, Season, Week, Score) %>% 
                  left_join(dat %>% 
-                             select(Team, Season, Week, TeamOwner, R:WHIP), 
+                             select(Team, Season, Week, Owner, R:WHIP), 
                            c('Team', 'Season', 'Week')) %>%
-                 mutate(WinPct = Score / (nrow(dat) * 12)) %>%
+                 mutate(WinPct = Score / (nrow(dat[dat$Playoffs == as.numeric(playoffs) & dat$Season %in% season,]) * 12)) %>%
                  select(-Score))  
       }else{
-        ranks <- data.frame(Team = dat$Team[dat$Playoffs == 0], 
-                            Season = dat$Season[dat$Playoffs == 0], 
-                            Week = dat$Week[dat$Playoffs == 0], 
-                            sapply(dat %>% filter(dat$Playoffs == 0) %>% 
+        ranks <- data.frame(Team = dat$Team[dat$Playoffs == 0 & dat$Season %in% season], 
+                            Season = dat$Season[dat$Playoffs == 0 & dat$Season %in% season], 
+                            Week = dat$Week[dat$Playoffs == 0 & dat$Season %in% season], 
+                            sapply(dat %>% filter(Playoffs == 0 & Season %in% season) %>% 
                                      select(R:SV), rank), 
-                            sapply(dat %>% filter(dat$Playoffs == 0) %>% 
-                                     select(ERA, WHIP), function(x) nrow(dat) + 1 - rank(x)))
+                            sapply(dat %>% filter(Playoffs == 0 & Season %in% season) %>% 
+                                     select(ERA, WHIP), function(x) nrow(dat[dat$Playoffs == as.numeric(playoffs) & dat$Season %in% season,]) + 1 - rank(x)))
         ranks[['Score']] <- apply(ranks %>% select(R:WHIP), 1, sum)
         return(ranks %>% 
                  arrange_(ifelse(best, 'desc(Score)', 'Score')) %>%
                  filter(row_number() <= numshow) %>%
                  select(Team, Season, Week, Score) %>% 
                  left_join(dat %>% 
-                             select(Team, Season, Week, TeamOwner, R:WHIP), 
+                             select(Team, Season, Week, Owner, R:WHIP), 
                            c('Team', 'Season', 'Week')) %>%
-                 mutate(WinPct = Score / (nrow(dat) * 12)) %>%
+                 mutate(WinPct = Score / (nrow(dat[dat$Playoffs == as.numeric(playoffs) & dat$Season %in% season,]) * 12)) %>%
                  select(-Score))
       }
       
     } else{
       if(playoffs){
         return(dat %>% 
-                 filter(dat$Playoffs == 1) %>%
+                 filter(Playoffs == 1 & Season %in% season) %>%
                  select_(.dots = c('Team', 'Season', 'Week', statcat)) %>%
                  arrange_(ifelse((statcat %in% c('WHIP', 'ERA') & best) | (!(statcat %in% c('WHIP', 'ERA')) & !best), statcat, paste0('desc(', statcat, ')'))) %>%
                  filter(row_number() <= numshow))
       }else{
         return(dat %>% 
-                 filter(dat$Playoffs == 0) %>%
+                 filter(Playoffs == 0 & Season %in% season) %>%
                  select_(.dots = c('Team', 'Season', 'Week', statcat)) %>%
                  arrange_(ifelse((statcat %in% c('WHIP', 'ERA') & best) | (!(statcat %in% c('WHIP', 'ERA')) & !best), statcat, paste0('desc(', statcat, ')'))) %>%
                  filter(row_number() <= numshow))
@@ -70,9 +99,10 @@ records.func <- function(dat = dat,
   }
 }
 
-# records.func(data = dat, 
-#              weekly = T, 
-#              statcat = 'All',
+# records.func(dat = dat,
+#              weekly = T,
+#              Season = 2016,
+#              statcat = 'R',
 #              playoffs = F,
 #              best = T,
 #              numshow = 5)
