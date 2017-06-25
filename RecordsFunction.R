@@ -5,6 +5,8 @@
 # playoffs = F
 # best = T
 # numshow = 5
+# ownerfilter = 'All'
+# franchisefilter = 'All'
 
 records.func <- function(dat = dat, 
                          weekly = T, 
@@ -12,13 +14,22 @@ records.func <- function(dat = dat,
                          statcat = 'All',
                          playoffs = F,
                          best = T,
-                         numshow = 5){
+                         numshow = 5,
+                         ownerfilter = 'All',
+                         franchisefilter = 'All'){
   
   dat <- dat %>% filter(AllStar == 0) %>%
     mutate(Luck = Wins - xWins)
   
-  if(!weekly){
-    dat.test <- dat %>%
+  dat <- dat %>% filter(ifelse(rep(ownerfilter, nrow(dat)) == 'All',
+                               TRUE, 
+                               TeamOwner == ownerfilter))
+  dat <- dat %>% filter(ifelse(rep(franchisefilter, nrow(dat)) == 'All',
+                               TRUE, 
+                               CurrentName == franchisefilter))
+ 
+    if(!weekly){
+    dat <- dat %>%
       filter(Playoffs == as.numeric(playoffs)) %>%
       group_by(Season, Team) %>%
       summarize(R = sum(R),
@@ -36,8 +47,9 @@ records.func <- function(dat = dat,
                 Luck = sum(Luck)) %>%
       ungroup()
     
-    return(dat.test %>% 
-             select_(.dots = c('Team', 'Season', statcat)) %>%
+    return(dat %>% 
+             mutate(Owner = TeamOwner) %>%
+             select_(.dots = c('Team', 'Season', 'Owner', statcat)) %>%
              arrange_(ifelse((statcat %in% c('WHIP', 'ERA') & best) | (!(statcat %in% c('WHIP', 'ERA')) & !best), statcat, paste0('desc(', statcat, ')'))) %>%
              filter(row_number() <= numshow))
     
@@ -57,7 +69,7 @@ records.func <- function(dat = dat,
                  filter(row_number() <= numshow) %>%
                  select(Team, Season, Week, Score) %>% 
                  left_join(dat %>% 
-                             select(Team, Season, Week, Owner, R:WHIP), 
+                             select(Team, Season, Week, Owner = TeamOwner, R:WHIP), 
                            c('Team', 'Season', 'Week')) %>%
                  mutate(WinPct = Score / (nrow(dat[dat$Playoffs == as.numeric(playoffs) & dat$Season %in% season,]) * 12)) %>%
                  select(-Score))  
@@ -75,7 +87,7 @@ records.func <- function(dat = dat,
                  filter(row_number() <= numshow) %>%
                  select(Team, Season, Week, Score) %>% 
                  left_join(dat %>% 
-                             select(Team, Season, Week, Owner, R:WHIP), 
+                             select(Team, Season, Week, Owner = TeamOwner, R:WHIP), 
                            c('Team', 'Season', 'Week')) %>%
                  mutate(WinPct = Score / (nrow(dat[dat$Playoffs == as.numeric(playoffs) & dat$Season %in% season,]) * 12)) %>%
                  select(-Score))

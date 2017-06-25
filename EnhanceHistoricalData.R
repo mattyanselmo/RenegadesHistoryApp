@@ -14,11 +14,11 @@ dat <- dat %>%
 allstar <- read.csv('AllStarWeeks.csv')
 
 dat <- dat %>%
-  left_join(teammap, by = c('Team', 'Season')) %>%
   left_join(allstar %>% mutate(AllStar = 1)) %>%
   mutate(Team = gsub('\\#[0-9]+ ', '', Team),
          Playoffs = ifelse(Week > 20 | (Season == 2013 & Week == 20), 1, 0),
-         AllStar = ifelse(is.na(AllStar), 0, 1))
+         AllStar = ifelse(is.na(AllStar), 0, 1)) %>%
+  left_join(teammap %>% select(-Season), by = c('Team'))
 
 ## Assess SOS luck ####
 standings <- data.frame()
