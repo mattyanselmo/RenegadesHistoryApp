@@ -1,12 +1,13 @@
 # dat <- read.csv('RenegadesHistoryFormatted.csv')
 # weekly = F
-# Season = 2016
+# Season = c(2016, 2017)
 # statcat = 'HR'
 # playoffs = F
 # best = T
-# numshow = 5
+# numshow = 10
 # ownerfilter = 'All'
 # franchisefilter = 'All'
+
 
 records.func <- function(dat = dat, 
                          weekly = T, 
@@ -32,7 +33,8 @@ records.func <- function(dat = dat,
     dat <- dat %>%
       filter(Playoffs == as.numeric(playoffs)) %>%
       group_by(Season, Team) %>%
-      summarize(R = sum(R),
+      summarize(Owner = TeamOwner[1],
+                R = sum(R),
                 HR = sum(HR),
                 RBI = sum(RBI),
                 SB = sum(SB),
@@ -48,7 +50,6 @@ records.func <- function(dat = dat,
       ungroup()
     
     return(dat %>% 
-             mutate(Owner = TeamOwner) %>%
              select_(.dots = c('Team', 'Season', 'Owner', statcat)) %>%
              arrange_(ifelse((statcat %in% c('WHIP', 'ERA') & best) | (!(statcat %in% c('WHIP', 'ERA')) & !best), statcat, paste0('desc(', statcat, ')'))) %>%
              filter(row_number() <= numshow))

@@ -9,7 +9,8 @@ shinyUI(
                        p('Each tab in this app is explained below:'),
                        br(),
                        p("The ", strong("Records"), " tab allows you to see the best and worst
-             individual weeks in this league's history. You can filter by playoff weeks
+             individual weeks and seasons in this league's history. There are four sub tabs for more
+             specific records. On each sub tab, you can filter by playoff weeks
              vs. non-playoff weeks, best vs. worst weeks, and a single stat 
              category vs. all 12 at once. When looking at all 12 stat categories
              at once, the individual weeks are ranked by how they would have done head-to-head
@@ -17,40 +18,37 @@ shinyUI(
                        br(),
                        p("The ", strong("Standings"), " tab allows you to look at three types of 
              current or historical standings: actual wins, schedule-adjusted wins,
-             and overall stats score (sometimes referred to as a Rotisserie score). You
-             will be able to select which season you'd like to look at, and then filter in or out
-             the teams/owners that you want to compare. The plots show the trajectory of each team's
-             placement in the selected type of standings.")
+             and overall stats score (sometimes referred to as a Rotisserie score). When you
+                         select Regular Season, a plot shows each team's cumulative wins
+                         throughout the selected season. When you select a particular week,
+                         tables show that week's matchups as well as cumulative wins up to that week.")
               ),                      
   
   tabPanel(title = 'Records',
            tabsetPanel(
              
-             tabPanel(title = 'General',
+             
+             tabPanel(title = 'Weekly Records',
                       sidebarLayout(
                         sidebarPanel(width = 3,
-                                     selectInput('records_timeperiod',
-                                                 label = 'By season or week:',
-                                                 choices = c('Season', 'Week'),
-                                                 selected = 'Week'),
-                                     numericInput('records_showtopnum',
+                                     numericInput('records_showtopnumw',
                                                   label = 'Show the top how many:',
                                                   min = 5, max = 50, value = 10, step = 1),
-                                     checkboxGroupInput('records_season',
-                                                        label = 'Explore weeks within which season:',
+                                     checkboxGroupInput('records_seasonw',
+                                                        label = 'Which seasons:',
                                                         choices = sort(unique(dat$Season)),
                                                         selected = sort(unique(dat$Season))),
-                                     selectInput('records_stat',
+                                     selectInput('records_statw',
                                                  label = 'Filter by stat category:',
                                                  choices = c('All', 'HR', 'R', 'RBI', 'SB',
                                                              'OBP', 'SLG', 'K', 'QS', 'W',
                                                              'SV', 'ERA', 'WHIP', 'Luck'),
                                                  selected = 'All'),
-                                     selectInput('records_best',
+                                     selectInput('records_bestw',
                                                  label = 'Show best or worst:',
                                                  choices = c('Best', 'Worst'),
                                                  selected = 'Best'),
-                                     selectInput('records_playoffs',
+                                     selectInput('records_playoffsw',
                                                  label = 'Playoffs or regular season:',
                                                  choices = c('Playoffs', 'Regular season'),
                                                  selected = 'Regular season')),
@@ -58,6 +56,35 @@ shinyUI(
                         mainPanel(
                           tableOutput('recordstable1'))
                       )),
+             
+             tabPanel(title = 'Season Records',
+             sidebarLayout(
+               sidebarPanel(width = 3,
+                            numericInput('records_showtopnums',
+                                         label = 'Show the top how many:',
+                                         min = 5, max = 50, value = 10, step = 1),
+                            checkboxGroupInput('records_seasons',
+                                               label = 'Which seasons:',
+                                               choices = sort(unique(dat$Season)),
+                                               selected = sort(unique(dat$Season))),
+                            selectInput('records_stats',
+                                        label = 'Filter by stat category:',
+                                        choices = c('HR', 'R', 'RBI', 'SB',
+                                                    'OBP', 'SLG', 'K', 'QS', 'W',
+                                                    'SV', 'ERA', 'WHIP', 'Luck'),
+                                        selected = 'All'),
+                            selectInput('records_bests',
+                                        label = 'Show best or worst:',
+                                        choices = c('Best', 'Worst'),
+                                        selected = 'Best'),
+                            selectInput('records_playoffss',
+                                        label = 'Playoffs or regular season:',
+                                        choices = c('Playoffs', 'Regular season'),
+                                        selected = 'Regular season')),
+               
+               mainPanel(
+                 tableOutput('recordstable2'))
+             )),
              
              tabPanel(title = 'By Franchise',
                       sidebarLayout(
@@ -74,7 +101,7 @@ shinyUI(
                                                   label = 'Show the top how many:',
                                                   min = 5, max = 50, value = 10, step = 1),
                                      checkboxGroupInput('records_seasonf',
-                                                        label = 'Explore weeks within which season:',
+                                                        label = 'Which seasons:',
                                                         choices = sort(unique(dat$Season)),
                                                         selected = sort(unique(dat$Season))),
                                      selectInput('records_statf',
@@ -93,7 +120,7 @@ shinyUI(
                                                  selected = 'Regular season')),
                         
                         mainPanel(
-                          tableOutput('recordstable2'))
+                          tableOutput('recordstable3'))
                       )),
              
              tabPanel(title = 'By Owner',
@@ -111,7 +138,7 @@ shinyUI(
                                                   label = 'Show the top how many:',
                                                   min = 5, max = 50, value = 10, step = 1),
                                      checkboxGroupInput('records_seasono',
-                                                        label = 'Explore weeks within which season:',
+                                                        label = 'Which seasons:',
                                                         choices = sort(unique(dat$Season)),
                                                         selected = sort(unique(dat$Season))),
                                      selectInput('records_stato',
@@ -130,7 +157,7 @@ shinyUI(
                                                  selected = 'Regular season')),
                         
                         mainPanel(
-                          tableOutput('recordstable3'))
+                          tableOutput('recordstable4'))
                       )))),
 
               tabPanel(title = 'Standings',

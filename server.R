@@ -3,17 +3,26 @@ shinyServer(function(input, output) {
   output$recordstable1 <- renderTable({
     
     records.func(dat = dat, 
-                 weekly = ifelse(input$records_timeperiod == 'Week', T, F), 
-                 season = input$records_season,
-                 statcat = ifelse(input$records_stat == 'All' & input$records_timeperiod == 'Season',
-                                  'Luck',
-                                  input$records_stat),
-                 playoffs = ifelse(input$records_playoffs == 'Playoffs', T, F),
-                 best = ifelse(input$records_best == 'Best', T, F),
-                 numshow = input$records_showtopnum)
+                 weekly = T, 
+                 season = input$records_seasonw,
+                 statcat = input$records_statw,
+                 playoffs = ifelse(input$records_playoffsw == 'Playoffs', T, F),
+                 best = ifelse(input$records_bestw == 'Best', T, F),
+                 numshow = input$records_showtopnumw)
   }, digits = 3, rownames = T)
   
   output$recordstable2 <- renderTable({
+    
+    records.func(dat = dat, 
+                 weekly = F, 
+                 season = input$records_seasons,
+                 statcat = input$records_stats,
+                 playoffs = ifelse(input$records_playoffss == 'Playoffs', T, F),
+                 best = ifelse(input$records_bests == 'Best', T, F),
+                 numshow = input$records_showtopnums)
+  }, digits = 3, rownames = T)
+  
+  output$recordstable3 <- renderTable({
     
     records.func(dat = dat,
                  franchisefilter = input$records_franchise,
@@ -27,7 +36,7 @@ shinyServer(function(input, output) {
                  numshow = input$records_showtopnumf)
   }, digits = 3, rownames = T)
   
-  output$recordstable3 <- renderTable({
+  output$recordstable4 <- renderTable({
     
     records.func(dat = dat,
                  ownerfilter = input$records_owner,
