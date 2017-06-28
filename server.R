@@ -11,7 +11,7 @@ shinyServer(function(input, output) {
                  playoffs = ifelse(input$records_playoffs == 'Playoffs', T, F),
                  best = ifelse(input$records_best == 'Best', T, F),
                  numshow = input$records_showtopnum)
-  })
+  }, digits = 3, rownames = T)
   
   output$recordstable2 <- renderTable({
     
