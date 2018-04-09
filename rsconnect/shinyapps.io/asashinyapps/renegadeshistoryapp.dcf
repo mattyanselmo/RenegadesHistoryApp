@@ -1,8 +1,10 @@
 name: renegadeshistoryapp
 title:
-account: renegades-history-app
+username:
+account: asashinyapps
 server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
 appId: 177439
-bundleId: 958267
+bundleId: 1309126
 url: https://asashinyapps.shinyapps.io/renegadeshistoryapp/
-when: 1503984485.18561
+when: 1523246429.88695

@@ -75,4 +75,6 @@ shinyServer(function(input, output) {
                    type = input$standings_type,
                    cumulative = T)
   })
+  
+  
 })
