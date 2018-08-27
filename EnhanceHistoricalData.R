@@ -4,11 +4,11 @@
 #   setwd("C:/Users/Matthias/Google Drive/Baseball Projects/Fantasy Baseball/RenegadesHistoryApp")
 # }
 
+library(dplyr)
+
 dat <- read.csv('weeklyscoreboard.csv')
 # dat <- read.csv('RenegadesHistory.csv')
 teammap <- read.csv('TeamMapping.csv')
-
-library(dplyr)
 
 dat <- dat %>%
   group_by(Season, Week) %>%
@@ -39,9 +39,10 @@ for(j in sort(unique(dat$Season))){
 
 # Record actual wins
 for(i in seq(1, dim(dat)[1], 2)){
-  standings$Wins[i] <- sum(dat[i, 5:14] > dat[i+1, 5:14]) + 
-    0.5 * sum(dat[i, 5:14] == dat[i+1, 5:14]) + 
-    sum(dat[i, 15:16] < dat[i+1, 15:16])
+  standings$Wins[i] <- sum(dat[i,] %>% select(R:SV) > dat[i+1,] %>% select(R:SV)) + 
+    0.5 * sum(dat[i,] %>% select(R:SV) == dat[i+1,] %>% select(R:SV)) + 
+    sum(dat[i,] %>% select(WHIP, ERA) < dat[i+1,] %>% select(WHIP, ERA)) +
+    0.5*sum(dat[i,] %>% select(WHIP, ERA) == dat[i+1,] %>% select(WHIP, ERA))
   standings$Wins[i+1] <- 12 - standings$Wins[i]
 }
 
