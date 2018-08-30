@@ -76,5 +76,12 @@ shinyServer(function(input, output) {
                    cumulative = T)
   })
   
+  output$consplayoffstable <- renderTable({
+    playoffs.cons
+  }, digits = 1, rownames = T)
+  
+  output$allplayoffstable <- renderTable({
+    playoffs.all
+  }, digits = 1, rownames = T)
   
 })
