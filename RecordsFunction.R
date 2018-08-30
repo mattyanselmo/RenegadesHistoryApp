@@ -52,6 +52,7 @@ records.func <- function(dat = dat,
     return(dat %>% 
              select_(.dots = c('Team', 'Season', 'Owner', statcat)) %>%
              arrange_(ifelse((statcat %in% c('WHIP', 'ERA') & best) | (!(statcat %in% c('WHIP', 'ERA')) & !best), statcat, paste0('desc(', statcat, ')'))) %>%
+             filter(Season %in% season) %>%
              filter(row_number() <= numshow))
     
   } else{ 
