@@ -49,13 +49,13 @@ cons.data <- playoff.data %>%
             ERA = sum(IP*ERA)/sum(IP), WHIP = sum(IP*WHIP)/sum(IP)) %>%
   ungroup()
 
-rot.score <- data.frame(Team = cons.data$Team, 
+rot.score1 <- data.frame(Team = cons.data$Team, 
                         apply(cons.data[,2:11], 2, rank),
                         apply(cons.data[,12:13], 2, function(x) 9 - rank(x)))
-rot.score[["Score"]] <- apply(rot.score[,-1], 1, sum)
-arrange(rot.score, desc(Score))
-arrange(cons.data, desc(rot.score$Score))
-saveRDS(arrange(rot.score, desc(Score)), paste0("ConsolationPlayoffRankings - ", season, '.RDS'))
+rot.score1[["Score"]] <- apply(rot.score1[,-1], 1, sum)
+arrange(rot.score1, desc(Score))
+arrange(cons.data, desc(rot.score1$Score))
+saveRDS(arrange(rot.score1, desc(Score)), paste0("ConsolationPlayoffRankings - ", season, '.RDS'))
 
 # All playoff teams ####
 cons.data <- playoff.data %>%
@@ -67,9 +67,9 @@ cons.data <- playoff.data %>%
             ERA = sum(IP*ERA)/sum(IP), WHIP = sum(IP*WHIP)/sum(IP)) %>%
   ungroup()
 
-rot.score <- data.frame(Team = cons.data$Team, 
+rot.score2 <- data.frame(Team = cons.data$Team, 
                         apply(cons.data[,2:11], 2, rank),
                         apply(cons.data[,12:13], 2, function(x) 13 - rank(x)))
-rot.score[["Score"]] <- apply(rot.score[,-1], 1, sum)
-arrange(rot.score, desc(Score))
-saveRDS(arrange(rot.score, desc(Score)), paste0("AllPlayoffRankings - ", season, '.RDS'))
+rot.score2[["Score"]] <- apply(rot.score2[,-1], 1, sum)
+arrange(rot.score2, desc(Score))
+saveRDS(arrange(rot.score2, desc(Score)), paste0("AllPlayoffRankings - ", season, '.RDS'))
